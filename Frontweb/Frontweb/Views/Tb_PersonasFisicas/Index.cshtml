@@ -5,7 +5,7 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js" ></script>
 
-<h2> Personas Fisicas </h2>
+<h2> Añadir Persona </h2>
 
 <div class="form-group" style="display: none;">
     <input id="IdPersonaFisica" class="form-control" name="IdPersonaFisica"/>
@@ -35,43 +35,54 @@
     <input id="UsuarioAgrega" class="form-control" name="UsuarioAgrega" />
 </div>
 
-<div class="text-center panel-body">
-    <button id="btnSave" class="btn btn-sm btn-primary">Guardar</button>
+<div class="text-center panel-body" style="margin-top: 10px">
+    <button id="btnSave"  onclick="Insert()" class="btn btn-sm btn-primary">Guardar</button>
 </div>
 
-<button onclick="getRecords()" class="btn btn-primary">Cargar registros</button>
+<div class="container" style="margin-top:50px">
+    <div class="row">
+        <div class="col-sm">
+        <h2>Registros añadidos</h2>
+        </div>
 
-<h2>Registros</h2>
-<table id="tblPersonasFisicas" class="table table-sm table-striped table-bordered m-2">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido Paterno</th>
-            <th>Apellido Materno</th>
-            <th>RFC</th>
-            <th>Fecha de Nacimiento</th>
-            <th>Estado</th>
-            <th>Fecha de Registro</th>
-            <th>Fecha de Actualizacion</th>
-            <th>Accion</th>
-        </tr>
-    </thead>
-</table>
+        <div class="col-sm">
+        <button onclick="getRecords()" class="btn btn-primary">Cargar registros</button>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:30px">
+    <table id="tblPersonasFisicas" class="table table-sm table-striped table-bordered m-2">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>RFC</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Estado</th>
+                <th>Fecha de Registro</th>
+                <th>Fecha de Actualizacion</th>
+                <th>Accion</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
 
 <script type="text/javascript">
-    $(document).ready(() => {
 
-    });
+    let flagEdit = false;
 
     const getRecords = () => {
         $.getJSON("/Tb_PersonasFisicas/GetPersons",(persons) => {
-            $("#tblPersonasFisicas tbody tr").remove();
+            $("#tblPersonasFisicas td").remove(); 
             persons.map((person,index) => {
                 $("#tblPersonasFisicas").append("<tr>" 
                     + "<td>" + person.idPersonaFisica + "</td>"
                     + "<td>" + person.nombre + "</td>"
-                    + "<td>" + person.apellidoMaterno + "</td>"
+                    + "<td>" + person.apellidoPaterno + "</td>"
                     + "<td>" + person.apellidoMaterno + "</td>"
                     + "<td>" + person.rfc + "</td>"
                     + "<td>" + person.fechaNacimiento + "</td>"
@@ -79,8 +90,8 @@
                     + "<td>" + person.fechaRegistro + "</td>"
                     + "<td>" + person.fechaActualizacion + "</td>"
                     + "<td>"
-                    +   "<button class='btn-success btn noHover' onclick='Edit("+person.idPersonaFisica+")' style='margin:10px'>Editar</button>"
-                    +   "<button class='btn-danger btn noHover' onclick='Delete("+person.idPersonaFisica+")'>Eliminar</button>"
+                    +   "<button class='btn-success' onclick='Edit("+person.idPersonaFisica+")' style='margin:10px;overflow: auto; visibility:visible;'>Editar</button>"
+                    +   "<button class='btn-danger' onclick='Delete("+person.idPersonaFisica+")'>Eliminar</button>"
                     + "</td>"
                     + "</tr>"
                 );
@@ -91,14 +102,15 @@
     const Edit = (IdPersonaFisica) => {
         if(IdPersonaFisica > 0){
             $.getJSON("/Tb_PersonasFisicas/GetByID?IdPersonaFisica="+IdPersonaFisica,(persons) => {
-                $("#IdPersonaFisica").val(persons.IdPersonaFisica);
-                $("#Nombre").val(persons.Nombre);
-                $("#ApellidoPaterno").val(persons.ApellidoPaterno);
-                $("#ApellidoMaterno").val(persons.ApellidoMaterno);
-                $("#RFC").val(persons.RFC);
-                $("#FechaNacimiento").val(persons.FechaNacimiento);
-                $("#UsuarioAgrega").val(persons.Activo);
-            });            
+                $("#IdPersonaFisica").val(persons.idPersonaFisica);
+                $("#Nombre").val(persons.nombre);
+                $("#ApellidoPaterno").val(persons.apellidoPaterno);
+                $("#ApellidoMaterno").val(persons.apellidoMaterno);
+                $("#RFC").val(persons.rfc);
+                $("#FechaNacimiento").val(persons.fechaNacimiento);
+                $("#UsuarioAgrega").val(persons.usuarioAgrega);
+            });
+            flagEdit = true
         }
     }
 
@@ -117,23 +129,49 @@
         }
     }
 
-    $("#btnSave").click(() => {
-        let personasFisica = {
-            id: $("#IdPersonaFisica").val(),
-            nombre: $("#Nombre").val(),
-            apellidoPaterno: $("#ApellidoPaterno").val(),
-            apellidoMaterno: $("#ApellidoMaterno").val(),
-            rfc: $("#RFC").val(),
-            fechaDeNacimiento: $("#FechaNacimiento").val(),
-            usuarioAdmin: $("#UsuarioAgrega").val()
+    const Insert = () => {
+
+        if ($('#Nombre').val() != ''){
+            let personasFisica = {
+                nombre: $("#Nombre").val(),
+                apellidoPaterno: $("#ApellidoPaterno").val(),
+                apellidoMaterno: $("#ApellidoMaterno").val(),
+                rfc: $("#RFC").val(),
+                fechaNacimiento: $("#FechaNacimiento").val(),
+                usuarioAgrega: $("#UsuarioAgrega").val(),
+                activo: true,
+                fechaRegistro: new Date().toISOString().split('T')[0],
+                fechaActualizacion: new Date().toISOString().split('T')[0]
+            }
+
+            if(flagEdit){
+                $.ajax({
+                    url: "/Tb_PersonasFisicas/Update?IdPersonaFisica="+ $("#IdPersonaFisica").val(),
+                    type: 'PUT',
+                    dataType: 'json',
+                    data: personasFisica,
+                    success: (data) => {
+                        flagEdit = false,           
+                        getRecords
+                    },
+                    error: (ex) => {
+                        console.log("error", ex)
+                    }
+                })             
+            }
+            else{
+                $.post("/Tb_PersonasFisicas/insert",personasFisica).done((data) => {
+                    getRecords
+                })
+            }
+            $("#IdPersonaFisica").val('');
+            $("#Nombre").val('');
+            $("#ApellidoPaterno").val('');
+            $("#ApellidoMaterno").val('');
+            $("#RFC").val('');
+            $("#FechaNacimiento").val('');
+            $("#UsuarioAgrega").val(''); 
         }
-        $.post("/Tb_PersonasFisicas/insert",personasFisica)
-            .done((data) => {
-                getRecords
-            })
-
-       // console.log(personasFisica)
-    })
-
-
+    }
+    
 </script>

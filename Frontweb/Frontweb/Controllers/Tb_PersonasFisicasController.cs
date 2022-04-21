@@ -69,7 +69,7 @@ namespace Frontweb.Controllers
             using (var httpClient = new HttpClient())
             {
                 StringContent content = new StringContent(
-                    JsonConvert.SerializeObject(_personasFisica), Encoding.UTF8, "application/js");
+                    JsonConvert.SerializeObject(_personasFisica), Encoding.UTF8, "application/json");
 
                 using (var response = await httpClient.PostAsync("https://localhost:7263/api/Tb_PersonasFisicas", content))
                 {
@@ -80,6 +80,27 @@ namespace Frontweb.Controllers
 
             return personasFisica;
         }
+
+        [HttpPut]
+        public async Task<Tb_PersonasFisicas> Update(int IdPersonaFisica, Tb_PersonasFisicas _personasFisica)
+        {
+            personasFisica = new Tb_PersonasFisicas();
+
+            using (var httpClient = new HttpClient())
+            {
+                StringContent content = new StringContent(
+                    JsonConvert.SerializeObject(_personasFisica), Encoding.UTF8, "application/json");
+
+                using (var response = await httpClient.PutAsync("https://localhost:7263/api/Tb_PersonasFisicas/" + IdPersonaFisica, content))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    personasFisica = JsonConvert.DeserializeObject<Tb_PersonasFisicas>(apiResponse);
+                }
+            }
+
+            return personasFisica;
+        }
+
 
         [HttpDelete]
         public async Task<string> Delete(int IdPersonaFisica)

@@ -19,7 +19,7 @@ namespace Api_Rest.Models
         public string? ApellidoMaterno { get; set; }
         public string? RFC { get; set; }
 
-        public DateTime FechaNacimiento { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
         public int? UsuarioAgrega { get; set; }
         public bool? Activo { get; set; }
     }
