@@ -36,16 +36,16 @@
 </div>
 
 <div class="text-center panel-body" style="margin-top: 10px">
-    <button id="btnSave"  onclick="Insert()" class="btn btn-sm btn-primary">Guardar</button>
+    <button id="btnSave"  onclick="Insert()" class="btn btn-md btn-success">Guardar</button>
 </div>
 
 <div class="container" style="margin-top:50px">
     <div class="row">
-        <div class="col-sm">
+        <div class="col-10">
         <h2>Registros añadidos</h2>
         </div>
 
-        <div class="col-sm">
+        <div class="col-2">
         <button onclick="getRecords()" class="btn btn-primary">Cargar registros</button>
         </div>
     </div>
@@ -90,7 +90,7 @@
                     + "<td>" + person.fechaRegistro + "</td>"
                     + "<td>" + person.fechaActualizacion + "</td>"
                     + "<td>"
-                    +   "<button class='btn-success' onclick='Edit("+person.idPersonaFisica+")' style='margin:10px;overflow: auto; visibility:visible;'>Editar</button>"
+                    +   "<button class='btn-success' onclick='Edit("+person.idPersonaFisica+")'>Editar</button>"
                     +   "<button class='btn-danger' onclick='Delete("+person.idPersonaFisica+")'>Eliminar</button>"
                     + "</td>"
                     + "</tr>"

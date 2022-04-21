@@ -14,16 +14,24 @@ namespace Frontweb.Controllers
         Tb_PersonasFisicas personasFisica = new Tb_PersonasFisicas();
         List<Tb_PersonasFisicas> personasFisicas = new List<Tb_PersonasFisicas>();
 
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Reports()
+        {
+            return View();
+        }
+
+
         public Tb_PersonasFisicasController()
         {
             handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
             {
                 return true;
             };
-        }
-        public IActionResult Index()
-        {
-            return View();
         }
 
         [HttpGet]
