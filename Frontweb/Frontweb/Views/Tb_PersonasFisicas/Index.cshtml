@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Persona Fisica";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js" ></script>
+
+<h2> Personas Fisicas </h2>
+
+<div class="form-group" style="display: none;">
+    <input id="IdPersonaFisica" class="form-control" name="IdPersonaFisica"/>
+</div>
+<div class="form-group">
+    <label for="Nombre" >Nombre: </label>
+    <input id="Nombre" class="form-control" name="Nombre" />
+</div>
+<div class="form-group">
+    <label for="ApellidoPaterno" >Apellido Paterno: </label>
+    <input id="ApellidoPaterno" class="form-control" name="ApellidoPaterno" />
+</div>
+<div class="form-group">
+    <label for="ApellidoMaterno" >Apellido Materno: </label>
+    <input id="ApellidoMaterno" class="form-control" name="ApellidoMaterno" />
+</div>
+<div class="form-group">
+    <label for="RFC" >RFC: </label>
+    <input id="RFC" class="form-control" name="RFC" />
+</div>
+<div class="form-group">
+    <label for="FechaNacimiento" >Fecha de Nacimiento: </label>
+    <input id="FechaNacimiento" type="date" class="form-control" name="FechaNacimiento" />
+</div>
+<div class="form-group">
+    <label for="UsuarioAgrega" >Identificador de administrador: </label>
+    <input id="UsuarioAgrega" class="form-control" name="UsuarioAgrega" />
+</div>
+
+<div class="text-center panel-body">
+    <button id="btnSave" class="btn btn-sm btn-primary">Guardar</button>
+</div>
+
+<button onclick="getRecords()" class="btn btn-primary">Cargar registros</button>
+
+<h2>Registros</h2>
+<table id="tblPersonasFisicas" class="table table-sm table-striped table-bordered m-2">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>RFC</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Estado</th>
+            <th>Fecha de Registro</th>
+            <th>Fecha de Actualizacion</th>
+            <th>Accion</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(() => {
+
+    });
+
+    const getRecords = () => {
+        $.getJSON("/Tb_PersonasFisicas/GetPersons",(persons) => {
+            $("#tblPersonasFisicas tbody tr").remove();
+            persons.map((person,index) => {
+                $("#tblPersonasFisicas").append("<tr>" 
+                    + "<td>" + person.idPersonaFisica + "</td>"
+                    + "<td>" + person.nombre + "</td>"
+                    + "<td>" + person.apellidoMaterno + "</td>"
+                    + "<td>" + person.apellidoMaterno + "</td>"
+                    + "<td>" + person.rfc + "</td>"
+                    + "<td>" + person.fechaNacimiento + "</td>"
+                    + "<td>" + person.activo + "</td>"
+                    + "<td>" + person.fechaRegistro + "</td>"
+                    + "<td>" + person.fechaActualizacion + "</td>"
+                    + "<td>"
+                    +   "<button class='btn-success btn noHover' onclick='Edit("+person.idPersonaFisica+")' style='margin:10px'>Editar</button>"
+                    +   "<button class='btn-danger btn noHover' onclick='Delete("+person.idPersonaFisica+")'>Eliminar</button>"
+                    + "</td>"
+                    + "</tr>"
+                );
+            })
+        });
+    }
+
+    const Edit = (IdPersonaFisica) => {
+        if(IdPersonaFisica > 0){
+            $.getJSON("/Tb_PersonasFisicas/GetByID?IdPersonaFisica="+IdPersonaFisica,(persons) => {
+                $("#IdPersonaFisica").val(persons.IdPersonaFisica);
+                $("#Nombre").val(persons.Nombre);
+                $("#ApellidoPaterno").val(persons.ApellidoPaterno);
+                $("#ApellidoMaterno").val(persons.ApellidoMaterno);
+                $("#RFC").val(persons.RFC);
+                $("#FechaNacimiento").val(persons.FechaNacimiento);
+                $("#UsuarioAgrega").val(persons.Activo);
+            });            
+        }
+    }
+
+    const Delete = (IdPersonaFisica) => {
+        if(IdPersonaFisica > 0){
+            $.ajax({
+                url: '/Tb_PersonasFisicas/Delete?IdPersonaFisica=' + IdPersonaFisica,
+                type: 'DELETE',
+                dataType: 'json',
+                success: (data) => {
+                },
+                error: (ex) => {
+                    console.log("error", ex)
+                }
+            })            
+        }
+    }
+
+    $("#btnSave").click(() => {
+        let personasFisica = {
+            id: $("#IdPersonaFisica").val(),
+            nombre: $("#Nombre").val(),
+            apellidoPaterno: $("#ApellidoPaterno").val(),
+            apellidoMaterno: $("#ApellidoMaterno").val(),
+            rfc: $("#RFC").val(),
+            fechaDeNacimiento: $("#FechaNacimiento").val(),
+            usuarioAdmin: $("#UsuarioAgrega").val()
+        }
+        $.post("/Tb_PersonasFisicas/insert",personasFisica)
+            .done((data) => {
+                getRecords
+            })
+
+       // console.log(personasFisica)
+    })
+
+
+</script>
