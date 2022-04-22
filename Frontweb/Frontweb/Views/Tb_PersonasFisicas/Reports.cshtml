@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Reportes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/lib/jquery/dist/jquery.min.js" ></script>
+
+
+<div>
+    <h2 style="text-align: center"> Reportes </h2>
+
+    <table id="example" class="display" style="width:100%; margin-top: 90px">
+        <thead>
+            <tr>
+                <th>Id Cliente</th>
+                <th>Fecha de Registro en la Empresa</th>
+                <th>Razon Social</th>
+                <th>RFC</th>
+                <th>Sucursal</th>
+                <th>Id Empleado</th>
+                <th>Nombre</th>
+                <th>Paterno</th>
+                <th>Materno</th>
+                <th>Id Viaje</th>
+            </tr>
+        </thead>
+    </table>
+
+    <button class="btn btn-primary" id="btnExport" onclick="ExportToExcel('xlsx')">Exportar como csv</button>
+</div>
+
+
+<script type="text/javascript">
+
+    window.onload = function () {
+        getToken()
+    }
+
+
+    const getToken = () => {
+        $.ajax({
+            url : 'https://api.toka.com.mx/candidato/api/login/authenticate',
+            type: 'POST',
+            data : {
+                Username: "ucand0021",
+                Password: "yNDVARG80sr@dDPc2yCT!" 
+            },
+            dataType : 'json',            
+            success: (data) => {
+                setTable(data.Data)     
+            },
+            error: (ex) => {
+                console.log("error", ex)
+            }
+        })   
+    }
+
+    const setTable = (token) => {
+        $.ajax({
+            url : 'https://api.toka.com.mx/candidato/api/customers',
+            data : {},
+            type: 'GET',
+            dataType : 'json',
+            headers: {'Authorization': `Bearer ${token} `},
+            
+            success: (data) => {
+                let t = $('#example').DataTable();
+                data.Data.forEach(element => {
+                    t.row.add([
+                        element.IdCliente,
+                        element.FechaRegistroEmpresa,
+                        element.RazonSocial,
+                        element.RFC,
+                        element.Sucursal,
+                        element.IdEmpleado,
+                        element.Nombre,
+                        element.Paterno,
+                        element.Materno,
+                        element.IdViaje
+                    ] ).draw( false );
+                })
+            },
+            error: (ex) => {
+                console.log("error", ex)
+            }
+        })
+    }
+
+    $(document).ready(function() {
+        $('#example').DataTable( {
+            "pagingType": "full_numbers"
+        } );
+    });
+
+    const  ExportToExcel = (type, fn, dl) => {
+       let elt = document.getElementById('example');
+       let wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+       return dl ?  XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }): XLSX.writeFile(wb, fn || ('TokaData.' + (type || 'xlsx')));
+    }
+
+
+</script>
