@@ -32,12 +32,35 @@
 <script type="text/javascript">
 
     window.onload = function () {
+        getToken()
+    }
+
+
+    const getToken = () => {
+        $.ajax({
+            url : 'https://api.toka.com.mx/candidato/api/login/authenticate',
+            type: 'POST',
+            data : {
+                Username: "ucand0021",
+                Password: "yNDVARG80sr@dDPc2yCT!" 
+            },
+            dataType : 'json',            
+            success: (data) => {
+                setTable(data.Data)     
+            },
+            error: (ex) => {
+                console.log("error", ex)
+            }
+        })   
+    }
+
+    const setTable = (token) => {
         $.ajax({
             url : 'https://api.toka.com.mx/candidato/api/customers',
             data : {},
+            type: 'GET',
             dataType : 'json',
-            // Añade un header:
-            headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InVjYW5kMDAyMSIsInJvbGUiOiJEZXZlbG9wZXIiLCJuYmYiOjE2NTA1NzY2NzcsImV4cCI6MTY1MDU3Njg1NywiaWF0IjoxNjUwNTc2Njc3LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.WsE0Y5LB52PUx002jNtJ1FonR39D_yypF1wub2O7eNI'},
+            headers: {'Authorization': `Bearer ${token} `},
             
             success: (data) => {
                 let t = $('#example').DataTable();
@@ -59,7 +82,6 @@
             error: (ex) => {
                 console.log("error", ex)
             }
-            
         })
     }
 
